@@ -25,14 +25,17 @@ pattern = re.compile('[A-Za-z\']+[!|?]+')
 
 for comment in subreddit.stream.comments(skip_existing = True):
   lastWord = comment.body.split(' ')[-1]
-  if pattern.match(lastWord):
-    print (comment.body)
-    if random.randint(1, 100) <= TOMMY_CHANCE:
-      tommyReply = '...' + re.sub('[^A-Za-z\']+', '', lastWord) + re.sub('[^!|?]+', '', lastWord)
-      print (tommyReply)
-    # comment.reply(tommyReply)
+  if pattern.match(lastWord) and random.randint(1, 100) <= TOMMY_CHANCE:
+    tommyReply = '...' + re.sub('[^A-Za-z\']+', '', lastWord) + re.sub('[^!|?]+', '', lastWord)
+    botReply = tommyReply + '''
+
+
+^Beep ^boop, ^I ^am ^a ^bot. ^Downvote ^me ^if ^I'm ^being ^annoying!'''
+    comment.reply(botReply)
+
+    logging.info('Last words of comment: ...' + ' '.join(comment.body.split(' ')[-5:]))
 
     # log this comment
-      with open('comments_replied_to.log', 'a') as f:
-        f.write(comment.id + '\n')
-        logging.info('Comment id [%s] written to file', comment.id)
+    with open('comments_replied_to.log', 'a') as f:
+      f.write(comment.id + '\n')
+      logging.info('Comment id [%s] written to file', comment.id)
